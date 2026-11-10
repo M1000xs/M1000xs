@@ -65,8 +65,7 @@ pre { font-family: 'DejaVu Sans Mono', monospace; font-size: 10.6px; line-height
 .cover .kick { font-size: 10px; font-weight: 600; letter-spacing: .32em; color: #a5b4fc; margin-bottom: 10px; }
 .cover .tp { border-top: 1px solid rgba(255,255,255,.28); border-bottom: 1px solid rgba(255,255,255,.28); padding: 4px 0 0; }
 .cover .tp div { font-size: 118px; font-weight: 800; letter-spacing: -.05em; line-height: 1;
-  background: linear-gradient(180deg, #ffffff 30%, #b8bdf7); -webkit-background-clip: text; background-clip: text; color: transparent;
-  padding-bottom: 6px; }
+  color: #e6e8ff; padding-bottom: 6px; }
 .cover h1 { font-size: 27px; font-weight: 700; letter-spacing: -.02em; line-height: 1.22; margin-top: 18px; max-width: 560px; }
 .cover .sub { color: #a3a9c4; font-size: 14px; margin-top: 12px; max-width: 520px; line-height: 1.55; }
 .cover .bar { width: 46px; height: 3px; border-radius: 2px; background: linear-gradient(90deg,#6366f1,#38bdf8); margin-top: 26px; }
