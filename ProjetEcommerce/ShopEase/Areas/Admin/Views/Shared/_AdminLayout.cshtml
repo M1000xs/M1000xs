@@ -1,0 +1,40 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Administration ShopEase</title>
+    <link rel="icon" href="~/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="admin">
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><span class="brand-logo">S</span> ShopEase · Admin</a>
+            <a class="btn btn-outline-light btn-sm" asp-area="" asp-controller="Home" asp-action="Index">← Retour à la boutique</a>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <aside class="col-md-2 admin-sidebar py-3">
+                <ul class="nav flex-md-column">
+                    <li class="nav-item"><a class="nav-link @(controller == "Dashboard" ? "active" : "")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Tableau de bord</a></li>
+                    <li class="nav-item"><a class="nav-link @(controller == "Products" ? "active" : "")" asp-area="Admin" asp-controller="Products" asp-action="Index">Produits</a></li>
+                    <li class="nav-item"><a class="nav-link @(controller == "Orders" ? "active" : "")" asp-area="Admin" asp-controller="Orders" asp-action="Index">Commandes</a></li>
+                </ul>
+            </aside>
+            <main class="col-md-10 py-4 px-md-4">
+                <partial name="_Alerts" />
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

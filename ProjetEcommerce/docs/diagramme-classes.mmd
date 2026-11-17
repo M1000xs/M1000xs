@@ -1,0 +1,96 @@
+classDiagram
+    direction LR
+    class IdentityUser {
+        <<ASP.NET Core Identity>>
+        +string Id
+        +string UserName
+        +string Email
+        +string PasswordHash
+        +string PhoneNumber
+    }
+    class ApplicationUser {
+        +string FirstName
+        +string LastName
+        +string Address
+        +string City
+        +string PostalCode
+        +DateTime RegisteredAt
+        +string FullName
+    }
+    class Category {
+        +int Id
+        +string Name
+        +string Description
+    }
+    class Product {
+        +int Id
+        +string Name
+        +string Description
+        +decimal Price
+        +int Stock
+        +string ImageUrl
+        +int SalesCount
+        +double Rating
+        +DateTime CreatedAt
+        +int CategoryId
+    }
+    class ProductImage {
+        +int Id
+        +string Url
+        +int ProductId
+    }
+    class CartItem {
+        +int Id
+        +string CartId
+        +int ProductId
+        +int Quantity
+        +DateTime AddedAt
+    }
+    class Order {
+        +int Id
+        +string OrderNumber
+        +string UserId
+        +DateTime OrderDate
+        +OrderStatus Status
+        +PaymentMethod PaymentMethod
+        +decimal SubTotal
+        +decimal ShippingCost
+        +decimal Total
+        +string ShippingFullName
+        +string ShippingAddress
+        +string ShippingCity
+        +string ShippingPostalCode
+        +string ShippingCountry
+        +string ShippingPhone
+    }
+    class OrderItem {
+        +int Id
+        +int OrderId
+        +int ProductId
+        +string ProductName
+        +decimal UnitPrice
+        +int Quantity
+        +decimal LineTotal
+    }
+    class OrderStatus {
+        <<enumeration>>
+        Pending
+        Paid
+        Shipped
+        Delivered
+        Cancelled
+    }
+    class PaymentMethod {
+        <<enumeration>>
+        CreditCard
+        CashOnDelivery
+    }
+    IdentityUser <|-- ApplicationUser
+    Category "1" --> "0..*" Product : contient
+    Product "1" *-- "0..*" ProductImage : galerie
+    ApplicationUser "1" --> "0..*" Order : passe
+    Order "1" *-- "1..*" OrderItem : lignes
+    OrderItem "0..*" --> "1" Product : référence
+    CartItem "0..*" --> "1" Product : référence
+    Order ..> OrderStatus
+    Order ..> PaymentMethod

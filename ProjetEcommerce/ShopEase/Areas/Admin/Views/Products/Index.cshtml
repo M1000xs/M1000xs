@@ -1,0 +1,35 @@
+@model List<Product>
+@{ ViewData["Title"] = "Produits"; }
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 mb-0">Produits <span class="text-muted fs-6">(@Model.Count)</span></h1>
+    <div class="d-flex gap-2">
+        <form method="get" class="d-flex gap-2"><input name="search" value="@ViewBag.Search" class="form-control form-control-sm" placeholder="Rechercher…" /><button class="btn btn-sm btn-outline-secondary">OK</button></form>
+        <a asp-action="Create" class="btn btn-sm btn-brand">+ Nouveau produit</a>
+    </div>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead class="table-light"><tr><th></th><th>Nom</th><th>Catégorie</th><th class="text-end">Prix</th><th class="text-end">Stock</th><th class="text-end">Ventes</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td><img src="@p.ImageUrl" class="cart-thumb-sm" alt="" /></td>
+                        <td>@p.Name</td>
+                        <td>@p.Category?.Name</td>
+                        <td class="text-end text-nowrap">@p.Price.ToDt()</td>
+                        <td class="text-end @(p.Stock == 0 ? "text-danger fw-bold" : "")">@p.Stock</td>
+                        <td class="text-end">@p.SalesCount</td>
+                        <td class="text-end text-nowrap">
+                            <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary">Modifier</a>
+                            <form asp-action="Delete" asp-route-id="@p.Id" method="post" class="d-inline" onsubmit="return confirm('Supprimer ce produit ?')">
+                                <button class="btn btn-sm btn-outline-danger">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

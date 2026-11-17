@@ -1,0 +1,53 @@
+@model Product
+@{
+    var isNew = Model.Id == 0;
+    ViewData["Title"] = isNew ? "Nouveau produit" : $"Modifier « {Model.Name} »";
+}
+<h1 class="h3 mb-4">@ViewData["Title"]</h1>
+<form asp-action="@(isNew ? "Create" : "Edit")" asp-route-id="@(isNew ? null : Model.Id)" method="post" enctype="multipart/form-data" class="card card-body" style="max-width: 860px">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    <div class="row g-3">
+        <div class="col-md-8">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger small"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="CategoryId" class="form-label"></label>
+            <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select"></select>
+        </div>
+        <div class="col-12">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" rows="4" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger small"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Price" class="form-label"></label>
+            <input asp-for="Price" type="number" step="0.01" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger small"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Stock" class="form-label"></label>
+            <input asp-for="Stock" class="form-control" />
+            <span asp-validation-for="Stock" class="text-danger small"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Rating" class="form-label"></label>
+            <input asp-for="Rating" type="number" step="0.1" min="0" max="5" class="form-control" />
+        </div>
+        <div class="col-md-8">
+            <label class="form-label" for="image">Image (jpg, png, webp, svg — 2 Mo max)</label>
+            <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.webp,.svg" class="form-control" />
+            <input type="hidden" asp-for="ImageUrl" />
+            <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+        </div>
+        <div class="col-md-4">
+            <img src="@Model.ImageUrl" alt="" class="img-thumbnail" style="max-height:120px" />
+        </div>
+    </div>
+    <div class="mt-4">
+        <button type="submit" class="btn btn-brand">Enregistrer</button>
+        <a asp-action="Index" class="btn btn-link">Annuler</a>
+    </div>
+</form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

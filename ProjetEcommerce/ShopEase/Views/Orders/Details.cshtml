@@ -1,0 +1,22 @@
+@model Order
+@{ ViewData["Title"] = $"Commande {Model.OrderNumber}"; }
+<div class="container">
+    <a asp-controller="Account" asp-action="Profile" asp-fragment="commandes" class="small">← Mes commandes</a>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mt-2 mb-4 gap-2">
+        <h1 class="h3 mb-0">Commande @Model.OrderNumber</h1>
+        <span class="badge fs-6 @Model.Status.BadgeClass()">@Model.Status.DisplayName()</span>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-8"><div class="card card-body"><partial name="_OrderLines" model="Model" /></div></div>
+        <div class="col-lg-4">
+            <div class="card card-body">
+                <h2 class="h6 text-uppercase text-muted">Passée le</h2>
+                <p>@Model.OrderDate.ToFrDateTime()</p>
+                <h2 class="h6 text-uppercase text-muted">Livraison</h2>
+                <address>@Model.ShippingFullName<br />@Model.ShippingAddress<br />@Model.ShippingPostalCode @Model.ShippingCity, @Model.ShippingCountry<br />@Model.ShippingPhone</address>
+                <h2 class="h6 text-uppercase text-muted">Paiement</h2>
+                <p class="mb-0">@Model.PaymentMethod.DisplayName()</p>
+            </div>
+        </div>
+    </div>
+</div>

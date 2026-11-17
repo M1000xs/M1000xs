@@ -1,0 +1,22 @@
+@model Order
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead class="table-light"><tr><th>Produit</th><th class="text-end">Prix unitaire</th><th class="text-center">Qté</th><th class="text-end">Total</th></tr></thead>
+        <tbody>
+            @foreach (var i in Model.Items)
+            {
+                <tr>
+                    <td>@i.ProductName</td>
+                    <td class="text-end">@i.UnitPrice.ToDt()</td>
+                    <td class="text-center">@i.Quantity</td>
+                    <td class="text-end">@i.LineTotal.ToDt()</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr><td colspan="3" class="text-end">Sous-total</td><td class="text-end">@Model.SubTotal.ToDt()</td></tr>
+            <tr><td colspan="3" class="text-end">Livraison</td><td class="text-end">@(Model.ShippingCost == 0 ? "Offerte" : Model.ShippingCost.ToDt())</td></tr>
+            <tr class="fw-bold"><td colspan="3" class="text-end">Total</td><td class="text-end">@Model.Total.ToDt()</td></tr>
+        </tfoot>
+    </table>
+</div>

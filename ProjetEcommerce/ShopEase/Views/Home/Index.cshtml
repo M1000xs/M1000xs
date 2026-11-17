@@ -1,0 +1,63 @@
+@{
+    ViewData["Title"] = "Accueil";
+    var categories = (List<Category>)ViewBag.Categories;
+    var popular = (List<Product>)ViewBag.Popular;
+    var newest = (List<Product>)ViewBag.Newest;
+}
+<section class="hero">
+    <div class="container py-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <h1 class="display-5 fw-bold">Tout ce qu'il vous faut, livré chez vous.</h1>
+                <p class="lead mb-4">Informatique, téléphonie, maison, mode, sport et livres : plus de 30 produits sélectionnés, livraison offerte dès 300 DT.</p>
+                <a class="btn btn-light btn-lg me-2" asp-controller="Products" asp-action="Index">Voir le catalogue</a>
+                <a class="btn btn-outline-light btn-lg" asp-controller="Products" asp-action="Index" asp-route-sort="newest">Nouveautés</a>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="hero-grid">
+                    @foreach (var p in popular.Take(4))
+                    {
+                        <img src="@p.ImageUrl" alt="" />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <section class="my-5">
+        <h2 class="h4 mb-3">Catégories</h2>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+            @foreach (var c in categories)
+            {
+                <div class="col">
+                    <a class="category-tile" asp-controller="Products" asp-action="Index" asp-route-categoryId="@c.Id">
+                        <span class="fw-semibold">@c.Name</span>
+                        <span class="small text-muted">@c.Products.Count produits</span>
+                    </a>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section class="my-5">
+        <div class="d-flex justify-content-between align-items-end mb-3">
+            <h2 class="h4 mb-0">Les plus populaires</h2>
+            <a asp-controller="Products" asp-action="Index" asp-route-sort="popular">Tout voir</a>
+        </div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+            @foreach (var p in popular) { <div class="col"><partial name="_ProductCard" model="p" /></div> }
+        </div>
+    </section>
+
+    <section class="my-5">
+        <div class="d-flex justify-content-between align-items-end mb-3">
+            <h2 class="h4 mb-0">Nouveautés</h2>
+            <a asp-controller="Products" asp-action="Index" asp-route-sort="newest">Tout voir</a>
+        </div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+            @foreach (var p in newest) { <div class="col"><partial name="_ProductCard" model="p" /></div> }
+        </div>
+    </section>
+</div>

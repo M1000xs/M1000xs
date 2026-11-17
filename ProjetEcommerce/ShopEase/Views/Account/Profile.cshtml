@@ -1,0 +1,95 @@
+@model ProfileViewModel
+@{ ViewData["Title"] = "Mon profil"; }
+<div class="container">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="avatar">@(Model.FirstName.FirstOrDefault())@(Model.LastName.FirstOrDefault())</div>
+        <div>
+            <h1 class="h3 mb-0">@Model.FirstName @Model.LastName</h1>
+            <span class="text-muted small">Client depuis le @Model.RegisteredAt.ToFrDate() · @Model.Orders.Count commande(s)</span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Informations personnelles</h2>
+                    <form asp-action="Profile" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="FirstName" class="form-label"></label>
+                                <input asp-for="FirstName" class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LastName" class="form-label"></label>
+                                <input asp-for="LastName" class="form-control" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Email" class="form-label"></label>
+                                <input asp-for="Email" class="form-control" readonly />
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="PhoneNumber" class="form-label"></label>
+                                <input asp-for="PhoneNumber" class="form-control" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Address" class="form-label"></label>
+                                <input asp-for="Address" class="form-control" />
+                            </div>
+                            <div class="col-md-7">
+                                <label asp-for="City" class="form-label"></label>
+                                <input asp-for="City" class="form-control" />
+                            </div>
+                            <div class="col-md-5">
+                                <label asp-for="PostalCode" class="form-label"></label>
+                                <input asp-for="PostalCode" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <button type="submit" class="btn btn-brand">Enregistrer</button>
+                            <a asp-action="ChangePassword" class="small">Changer le mot de passe</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8" id="commandes">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Historique des commandes</h2>
+                    @if (!Model.Orders.Any())
+                    {
+                        <p class="text-muted mb-0">Vous n'avez pas encore passé de commande.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead class="table-light"><tr><th>N° commande</th><th>Date</th><th class="text-center">Articles</th><th class="text-end">Total</th><th>Statut</th><th></th></tr></thead>
+                                <tbody>
+                                    @foreach (var o in Model.Orders)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold text-nowrap">@o.OrderNumber</td>
+                                            <td class="text-nowrap">@o.OrderDate.ToFrDate()</td>
+                                            <td class="text-center">@o.Items.Sum(i => i.Quantity)</td>
+                                            <td class="text-end text-nowrap">@o.Total.ToDt()</td>
+                                            <td><span class="badge @o.Status.BadgeClass()">@o.Status.DisplayName()</span></td>
+                                            <td><a asp-controller="Orders" asp-action="Details" asp-route-id="@o.OrderNumber" class="btn btn-sm btn-outline-secondary text-nowrap">Détail</a></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

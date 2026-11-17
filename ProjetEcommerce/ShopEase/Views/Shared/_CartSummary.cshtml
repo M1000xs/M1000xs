@@ -1,0 +1,18 @@
+@model CartViewModel
+<div class="card summary-card">
+    <div class="card-body">
+        <h2 class="h5 mb-3">Récapitulatif</h2>
+        <dl class="row mb-0">
+            <dt class="col-7 fw-normal">Sous-total (@Model.ItemCount article@(Model.ItemCount > 1 ? "s" : ""))</dt>
+            <dd class="col-5 text-end">@Model.SubTotal.ToDt()</dd>
+            <dt class="col-7 fw-normal">Livraison</dt>
+            <dd class="col-5 text-end">@(Model.ShippingCost == 0 ? "Offerte" : Model.ShippingCost.ToDt())</dd>
+            <dt class="col-7 fs-5 border-top pt-2">Total</dt>
+            <dd class="col-5 fs-5 text-end fw-bold border-top pt-2">@Model.Total.ToDt()</dd>
+        </dl>
+        @if (Model.ShippingCost > 0)
+        {
+            <p class="small text-muted mb-0 mt-2">Plus que @((ShippingRules.FreeShippingThreshold - Model.SubTotal).ToDt()) pour la livraison gratuite.</p>
+        }
+    </div>
+</div>

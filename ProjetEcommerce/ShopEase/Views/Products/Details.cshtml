@@ -1,0 +1,88 @@
+@model ProductDetailsViewModel
+@{
+    var p = Model.Product;
+    ViewData["Title"] = p.Name;
+    var images = p.Images.Select(i => i.Url).DefaultIfEmpty(p.ImageUrl).Distinct().ToList();
+}
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Accueil</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Catalogue</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index" asp-route-categoryId="@p.CategoryId">@p.Category?.Name</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@p.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <div class="col-md-6">
+            <div class="gallery">
+                <img id="mainImage" src="@images[0]" class="img-fluid rounded-4 shadow-sm w-100" alt="@p.Name" />
+                @if (images.Count > 1)
+                {
+                    <div class="d-flex gap-2 mt-3">
+                        @for (var i = 0; i < images.Count; i++)
+                        {
+                            <button type="button" class="thumb @(i == 0 ? "active" : "")" data-src="@images[i]" aria-label="Image @(i + 1)">
+                                <img src="@images[i]" alt="" />
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <span class="badge bg-light text-dark border mb-2">@p.Category?.Name</span>
+            <h1 class="h2 fw-bold">@p.Name</h1>
+            <div class="mb-3"><partial name="_Stars" model="p.Rating" /> · <span class="text-muted">@p.SalesCount vendus</span></div>
+            <p class="display-6 price mb-3">@p.Price.ToDt()</p>
+
+            @if (p.Stock == 0)
+            {
+                <p class="text-danger fw-semibold">Rupture de stock</p>
+            }
+            else if (p.Stock <= 10)
+            {
+                <p class="fw-semibold low-stock">Plus que @p.Stock en stock !</p>
+            }
+            else
+            {
+                <p class="text-success fw-semibold">En stock</p>
+            }
+
+            <h2 class="h6 text-uppercase text-muted mt-4">Description</h2>
+            <p class="mb-4">@p.Description</p>
+
+            <form asp-controller="Cart" asp-action="Add" method="post" class="d-flex gap-2 align-items-end">
+                <input type="hidden" name="productId" value="@p.Id" />
+                <input type="hidden" name="returnUrl" value="@Url.Action("Details", new { id = p.Id })" />
+                <div>
+                    <label for="quantity" class="form-label small">Quantité</label>
+                    <input id="quantity" name="quantity" type="number" class="form-control" value="1" min="1" max="@Math.Max(1, Math.Min(99, p.Stock))" style="width:90px" disabled="@(p.Stock == 0)" />
+                </div>
+                <button type="submit" class="btn btn-brand btn-lg flex-grow-1" disabled="@(p.Stock == 0)">Ajouter au panier</button>
+            </form>
+            @if (Model.QuantityInCart > 0)
+            {
+                <p class="small text-muted mt-2">Déjà @Model.QuantityInCart dans votre <a asp-controller="Cart" asp-action="Index">panier</a>.</p>
+            }
+
+            <ul class="list-unstyled small text-muted mt-4 border-top pt-3">
+                <li>Livraison offerte dès @ShippingRules.FreeShippingThreshold.ToDt(), sinon @ShippingRules.StandardCost.ToDt()</li>
+                <li>Retour gratuit sous 14 jours</li>
+                <li>Référence produit : #@p.Id.ToString("D5")</li>
+            </ul>
+        </div>
+    </div>
+
+    @if (Model.Related.Any())
+    {
+        <section class="my-5">
+            <h2 class="h4 mb-3">Dans la même catégorie</h2>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+                @foreach (var r in Model.Related) { <div class="col"><partial name="_ProductCard" model="r" /></div> }
+            </div>
+        </section>
+    }
+</div>

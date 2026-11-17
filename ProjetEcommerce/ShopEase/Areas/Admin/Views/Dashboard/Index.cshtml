@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "Tableau de bord";
+    var latest = (List<Order>)ViewBag.LatestOrders;
+    var top = (List<Product>)ViewBag.TopProducts;
+}
+<h1 class="h3 mb-4">Tableau de bord</h1>
+<div class="row row-cols-2 row-cols-lg-4 g-3 mb-4">
+    <div class="col"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Chiffre d'affaires</div><div class="fs-4 fw-bold">@(((decimal)ViewBag.Revenue).ToDt())</div></div></div></div>
+    <div class="col"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Commandes</div><div class="fs-4 fw-bold">@ViewBag.OrderCount</div></div></div></div>
+    <div class="col"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Produits</div><div class="fs-4 fw-bold">@ViewBag.ProductCount <span class="fs-6 text-danger fw-normal">(@ViewBag.OutOfStock en rupture)</span></div></div></div></div>
+    <div class="col"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Utilisateurs</div><div class="fs-4 fw-bold">@ViewBag.CustomerCount</div></div></div></div>
+</div>
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card"><div class="card-body">
+            <h2 class="h5">Dernières commandes</h2>
+            <table class="table table-sm align-middle mb-0">
+                <thead><tr><th>N°</th><th>Client</th><th>Date</th><th class="text-end">Total</th><th>Statut</th></tr></thead>
+                <tbody>
+                    @foreach (var o in latest)
+                    {
+                        <tr>
+                            <td><a asp-controller="Orders" asp-action="Details" asp-route-id="@o.Id">@o.OrderNumber</a></td>
+                            <td>@o.User?.FullName</td>
+                            <td>@o.OrderDate.ToFrDate()</td>
+                            <td class="text-end">@o.Total.ToDt()</td>
+                            <td><span class="badge @o.Status.BadgeClass()">@o.Status.DisplayName()</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div></div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card"><div class="card-body">
+            <h2 class="h5">Meilleures ventes</h2>
+            <ol class="list-group list-group-numbered list-group-flush">
+                @foreach (var p in top)
+                {
+                    <li class="list-group-item d-flex justify-content-between"><span class="ms-2 me-auto">@p.Name</span><span class="badge bg-light text-dark border">@p.SalesCount vendus</span></li>
+                }
+            </ol>
+        </div></div>
+    </div>
+</div>

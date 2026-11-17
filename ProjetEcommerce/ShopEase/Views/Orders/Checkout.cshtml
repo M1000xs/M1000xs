@@ -1,0 +1,119 @@
+@model CheckoutViewModel
+@{ ViewData["Title"] = "Validation de la commande"; }
+<div class="container">
+    <ol class="checkout-steps mb-4">
+        <li class="done">Panier</li><li class="current">Livraison &amp; paiement</li><li>Confirmation</li>
+    </ol>
+    <h1 class="h3 mb-4">Validation de la commande</h1>
+
+    <form asp-action="Checkout" method="post" novalidate>
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="h5 mb-3">1. Adresse de livraison</h2>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label asp-for="FullName" class="form-label"></label>
+                                <input asp-for="FullName" class="form-control" autocomplete="name" />
+                                <span asp-validation-for="FullName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Address" class="form-label"></label>
+                                <input asp-for="Address" class="form-control" autocomplete="street-address" />
+                                <span asp-validation-for="Address" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-5">
+                                <label asp-for="City" class="form-label"></label>
+                                <input asp-for="City" class="form-control" autocomplete="address-level2" />
+                                <span asp-validation-for="City" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="PostalCode" class="form-label"></label>
+                                <input asp-for="PostalCode" class="form-control" autocomplete="postal-code" />
+                                <span asp-validation-for="PostalCode" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Country" class="form-label"></label>
+                                <input asp-for="Country" class="form-control" autocomplete="country-name" />
+                                <span asp-validation-for="Country" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Phone" class="form-label"></label>
+                                <input asp-for="Phone" class="form-control" autocomplete="tel" />
+                                <span asp-validation-for="Phone" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12 form-check ms-1">
+                                <input asp-for="SaveAddress" class="form-check-input" />
+                                <label asp-for="SaveAddress" class="form-check-label"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="h5 mb-3">2. Paiement</h2>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@PaymentMethod.CreditCard" id="payCard" />
+                            <label class="form-check-label" for="payCard">Carte bancaire</label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@PaymentMethod.CashOnDelivery" id="payCash" />
+                            <label class="form-check-label" for="payCash">Paiement à la livraison</label>
+                        </div>
+
+                        <div id="cardFields" class="row g-3">
+                            <div class="col-12">
+                                <label asp-for="CardNumber" class="form-label"></label>
+                                <input asp-for="CardNumber" class="form-control" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242" />
+                                <span asp-validation-for="CardNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6">
+                                <label asp-for="CardExpiry" class="form-label"></label>
+                                <input asp-for="CardExpiry" class="form-control" autocomplete="cc-exp" placeholder="12/28" />
+                                <span asp-validation-for="CardExpiry" class="text-danger small"></span>
+                            </div>
+                            <div class="col-6">
+                                <label asp-for="CardCvv" class="form-label"></label>
+                                <input asp-for="CardCvv" class="form-control" inputmode="numeric" autocomplete="cc-csc" placeholder="123" />
+                                <span asp-validation-for="CardCvv" class="text-danger small"></span>
+                            </div>
+                            <p class="small text-muted mb-0">Paiement simulé pour le projet : aucune donnée bancaire n'est enregistrée. Carte de test : 4242 4242 4242 4242.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card mb-3">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var i in Model.Cart.Items)
+                        {
+                            <li class="list-group-item d-flex align-items-center gap-3">
+                                <img src="@i.Product!.ImageUrl" class="cart-thumb-sm" alt="" />
+                                <div class="flex-grow-1 small"><div class="fw-semibold">@i.Product.Name</div>Qté : @i.Quantity</div>
+                                <span class="small text-nowrap">@((i.Product.Price * i.Quantity).ToDt())</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <partial name="_CartSummary" model="Model.Cart" />
+                <button type="submit" class="btn btn-brand btn-lg w-100 mt-3">Confirmer et payer @Model.Cart.Total.ToDt()</button>
+                <a asp-controller="Cart" asp-action="Index" class="btn btn-link w-100">Modifier le panier</a>
+            </div>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const fields = document.getElementById('cardFields');
+            const toggle = () => fields.style.display = document.getElementById('payCard').checked ? '' : 'none';
+            document.querySelectorAll('input[name="PaymentMethod"]').forEach(r => r.addEventListener('change', toggle));
+            toggle();
+        })();
+    </script>
+}

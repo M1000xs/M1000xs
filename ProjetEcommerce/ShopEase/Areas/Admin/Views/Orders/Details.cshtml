@@ -1,0 +1,34 @@
+@model Order
+@{ ViewData["Title"] = $"Commande {Model.OrderNumber}"; }
+<a asp-action="Index" class="small">← Toutes les commandes</a>
+<div class="d-flex flex-wrap justify-content-between align-items-center mt-2 mb-4 gap-2">
+    <h1 class="h3 mb-0">Commande @Model.OrderNumber</h1>
+    <span class="badge fs-6 @Model.Status.BadgeClass()">@Model.Status.DisplayName()</span>
+</div>
+<div class="row g-4">
+    <div class="col-lg-8"><div class="card card-body"><partial name="_OrderLines" model="Model" /></div></div>
+    <div class="col-lg-4">
+        <div class="card card-body mb-3">
+            <h2 class="h6 text-uppercase text-muted">Client</h2>
+            <p>@Model.User?.FullName<br /><span class="small">@Model.User?.Email</span></p>
+            <h2 class="h6 text-uppercase text-muted">Livraison</h2>
+            <address>@Model.ShippingFullName<br />@Model.ShippingAddress<br />@Model.ShippingPostalCode @Model.ShippingCity, @Model.ShippingCountry<br />@Model.ShippingPhone</address>
+            <h2 class="h6 text-uppercase text-muted">Paiement</h2>
+            <p class="mb-0">@Model.PaymentMethod.DisplayName() · @Model.OrderDate.ToFrDateTime()</p>
+        </div>
+        @if (Model.Status != OrderStatus.Cancelled)
+        {
+            <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post" class="card card-body">
+                <label for="status" class="form-label fw-semibold">Changer le statut</label>
+                <select id="status" name="status" class="form-select mb-2">
+                    @foreach (OrderStatus s in Enum.GetValues<OrderStatus>())
+                    {
+                        <option value="@s" selected="@(s == Model.Status)">@s.DisplayName()</option>
+                    }
+                </select>
+                <button class="btn btn-brand">Mettre à jour</button>
+                <p class="small text-muted mt-2 mb-0">L'annulation remet les articles en stock.</p>
+            </form>
+        }
+    </div>
+</div>

@@ -1,0 +1,85 @@
+@model CartViewModel
+@{ ViewData["Title"] = "Mon panier"; }
+<div class="container">
+    <h1 class="h3 mb-4">Mon panier</h1>
+
+    @if (!Model.Items.Any())
+    {
+        <div class="text-center py-5 border rounded bg-white">
+            <p class="lead">Votre panier est vide.</p>
+            <a asp-controller="Products" asp-action="Index" class="btn btn-brand">Découvrir le catalogue</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0 cart-table">
+                            <thead class="table-light">
+                                <tr><th>Produit</th><th class="text-end">Prix</th><th class="text-center">Quantité</th><th class="text-end">Total</th><th></th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    var p = item.Product!;
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="@p.ImageUrl" alt="" class="cart-thumb" />
+                                                <div>
+                                                    <a asp-controller="Products" asp-action="Details" asp-route-id="@p.Id" class="fw-semibold">@p.Name</a>
+                                                    <div class="small text-muted">@(p.Stock > 0 ? $"{p.Stock} en stock" : "Rupture de stock")</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-end text-nowrap">@p.Price.ToDt()</td>
+                                        <td class="text-center">
+                                            <div class="d-inline-flex qty-form">
+                                                <form asp-action="Update" method="post">
+                                                    <input type="hidden" name="productId" value="@p.Id" />
+                                                    <button class="btn btn-outline-secondary btn-sm" name="quantity" value="@(item.Quantity - 1)" aria-label="Diminuer">−</button>
+                                                </form>
+                                                <form asp-action="Update" method="post">
+                                                    <input type="hidden" name="productId" value="@p.Id" />
+                                                    <input type="number" class="form-control form-control-sm text-center qty-input" name="quantity" value="@item.Quantity" min="0" max="@Math.Min(99, p.Stock)" aria-label="Quantité" onchange="this.form.requestSubmit()" />
+                                                </form>
+                                                <form asp-action="Update" method="post">
+                                                    <input type="hidden" name="productId" value="@p.Id" />
+                                                    <button class="btn btn-outline-secondary btn-sm" name="quantity" value="@(item.Quantity + 1)" aria-label="Augmenter" disabled="@(item.Quantity >= Math.Min(99, p.Stock))">+</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                        <td class="text-end fw-semibold text-nowrap">@((p.Price * item.Quantity).ToDt())</td>
+                                        <td class="text-end">
+                                            <form asp-action="Remove" method="post">
+                                                <input type="hidden" name="productId" value="@p.Id" />
+                                                <button class="btn btn-link text-danger btn-sm" title="Supprimer">Supprimer</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between mt-3">
+                    <a asp-controller="Products" asp-action="Index" class="btn btn-outline-secondary">← Continuer mes achats</a>
+                    <form asp-action="Clear" method="post" onsubmit="return confirm('Vider le panier ?')">
+                        <button class="btn btn-outline-danger">Vider le panier</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <partial name="_CartSummary" model="Model" />
+                <a asp-controller="Orders" asp-action="Checkout" class="btn btn-brand btn-lg w-100 mt-3">Valider la commande</a>
+                @if (!User.Identity!.IsAuthenticated)
+                {
+                    <p class="small text-muted mt-2 text-center">Vous serez invité à vous connecter : votre panier sera conservé.</p>
+                }
+            </div>
+        </div>
+    }
+</div>

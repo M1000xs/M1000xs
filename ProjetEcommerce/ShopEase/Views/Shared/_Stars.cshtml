@@ -1,0 +1,6 @@
+@model double
+@{
+    var full = (int)Math.Round(Model);
+}
+<span class="stars" aria-label="Note : @Model.ToString("0.0") sur 5">@(new string('★', full))<span class="stars-off">@(new string('★', 5 - full))</span></span>
+<span class="text-muted">@Model.ToString("0.0")</span>

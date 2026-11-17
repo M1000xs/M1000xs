@@ -1,0 +1,119 @@
+@model ProductListViewModel
+@{
+    ViewData["Title"] = "Catalogue";
+    var f = Model.Filter;
+    var sorts = new Dictionary<string, string>
+    {
+        ["popular"] = "Popularité", ["newest"] = "Nouveautés", ["rating"] = "Mieux notés",
+        ["price_asc"] = "Prix croissant", ["price_desc"] = "Prix décroissant", ["name"] = "Nom (A-Z)"
+    };
+    // Construit les paramètres d'URL en gardant les filtres courants (pour la pagination).
+    Dictionary<string, string> RouteFor(int page) => new()
+    {
+        ["search"] = f.Search ?? "", ["categoryId"] = f.CategoryId?.ToString() ?? "",
+        ["minPrice"] = f.MinPrice?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "",
+        ["maxPrice"] = f.MaxPrice?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "",
+        ["inStockOnly"] = f.InStockOnly ? "true" : "", ["sort"] = f.Sort, ["page"] = page.ToString()
+    };
+    var currentCategory = Model.Categories.FirstOrDefault(c => c.Id == f.CategoryId);
+}
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Accueil</a></li>
+            <li class="breadcrumb-item @(currentCategory is null ? "active" : "")"><a asp-action="Index">Catalogue</a></li>
+            @if (currentCategory is not null) { <li class="breadcrumb-item active">@currentCategory.Name</li> }
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Filtres -->
+        <aside class="col-lg-3">
+            <form method="get" asp-action="Index" class="card card-body filter-panel" id="filterForm">
+                <h2 class="h6 text-uppercase text-muted mb-3">Filtres</h2>
+
+                <label class="form-label small fw-semibold" for="search">Recherche</label>
+                <input class="form-control mb-3" id="search" name="search" value="@f.Search" placeholder="Nom, description…" />
+
+                <label class="form-label small fw-semibold" for="categoryId">Catégorie</label>
+                <select class="form-select mb-3" id="categoryId" name="categoryId">
+                    <option value="">Toutes les catégories</option>
+                    @foreach (var c in Model.Categories)
+                    {
+                        <option value="@c.Id" selected="@(c.Id == f.CategoryId)">@c.Name</option>
+                    }
+                </select>
+
+                <span class="form-label small fw-semibold d-block">Prix (DT)</span>
+                <div class="input-group mb-3">
+                    <input class="form-control" type="number" min="0" step="1" name="minPrice" value="@f.MinPrice?.ToString(System.Globalization.CultureInfo.InvariantCulture)" placeholder="Min" aria-label="Prix minimum" />
+                    <span class="input-group-text">–</span>
+                    <input class="form-control" type="number" min="0" step="1" name="maxPrice" value="@f.MaxPrice?.ToString(System.Globalization.CultureInfo.InvariantCulture)" placeholder="Max" aria-label="Prix maximum" />
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="inStockOnly" name="inStockOnly" value="true" checked="@f.InStockOnly" />
+                    <label class="form-check-label" for="inStockOnly">En stock uniquement</label>
+                </div>
+
+                <input type="hidden" name="sort" value="@f.Sort" />
+                <button type="submit" class="btn btn-brand w-100 mb-2">Appliquer</button>
+                <a asp-action="Index" class="btn btn-outline-secondary w-100">Réinitialiser</a>
+            </form>
+        </aside>
+
+        <!-- Résultats -->
+        <section class="col-lg-9">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <p class="mb-0 text-muted"><strong class="text-body">@Model.TotalCount</strong> produit(s) trouvé(s)</p>
+                <form method="get" asp-action="Index" class="d-flex align-items-center gap-2">
+                    @foreach (var kv in RouteFor(1).Where(kv => kv.Key is not ("sort" or "page") && kv.Value != ""))
+                    {
+                        <input type="hidden" name="@kv.Key" value="@kv.Value" />
+                    }
+                    <label for="sort" class="small text-muted text-nowrap">Trier par</label>
+                    <select id="sort" name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+                        @foreach (var s in sorts)
+                        {
+                            <option value="@s.Key" selected="@(s.Key == f.Sort)">@s.Value</option>
+                        }
+                    </select>
+                </form>
+            </div>
+
+            @if (!Model.Products.Any())
+            {
+                <div class="text-center py-5 border rounded bg-white">
+                    <p class="lead mb-2">Aucun produit ne correspond à votre recherche.</p>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Voir tous les produits</a>
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
+                    @foreach (var p in Model.Products) { <div class="col"><partial name="_ProductCard" model="p" /></div> }
+                </div>
+            }
+
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="mt-4" aria-label="Pagination">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(f.Page == 1 ? "disabled" : "")">
+                            <a class="page-link" asp-action="Index" asp-all-route-data="RouteFor(f.Page - 1)">Précédent</a>
+                        </li>
+                        @for (var i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == f.Page ? "active" : "")">
+                                <a class="page-link" asp-action="Index" asp-all-route-data="RouteFor(i)">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(f.Page == Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" asp-action="Index" asp-all-route-data="RouteFor(f.Page + 1)">Suivant</a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </section>
+    </div>
+</div>

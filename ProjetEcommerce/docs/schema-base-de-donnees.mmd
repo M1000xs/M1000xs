@@ -1,0 +1,85 @@
+erDiagram
+    AspNetUsers ||--o{ Orders : "passe"
+    AspNetUsers ||--o{ AspNetUserRoles : ""
+    AspNetRoles ||--o{ AspNetUserRoles : ""
+    Categories ||--o{ Products : "contient"
+    Products ||--o{ ProductImages : "galerie"
+    Products ||--o{ CartItems : "dans panier"
+    Products ||--o{ OrderItems : "commandé"
+    Orders ||--|{ OrderItems : "contient"
+
+    AspNetUsers {
+        TEXT Id PK
+        TEXT UserName
+        TEXT Email UK
+        TEXT PasswordHash
+        TEXT PhoneNumber
+        TEXT FirstName
+        TEXT LastName
+        TEXT Address
+        TEXT City
+        TEXT PostalCode
+        TEXT RegisteredAt
+    }
+    AspNetRoles {
+        TEXT Id PK
+        TEXT Name "Admin, Client"
+    }
+    AspNetUserRoles {
+        TEXT UserId PK,FK
+        TEXT RoleId PK,FK
+    }
+    Categories {
+        INTEGER Id PK
+        TEXT Name UK
+        TEXT Description
+    }
+    Products {
+        INTEGER Id PK
+        TEXT Name
+        TEXT Description
+        REAL Price
+        INTEGER Stock
+        TEXT ImageUrl
+        INTEGER SalesCount
+        REAL Rating
+        TEXT CreatedAt
+        INTEGER CategoryId FK
+    }
+    ProductImages {
+        INTEGER Id PK
+        TEXT Url
+        INTEGER ProductId FK
+    }
+    CartItems {
+        INTEGER Id PK
+        TEXT CartId "UserId ou cookie anonyme"
+        INTEGER ProductId FK
+        INTEGER Quantity
+        TEXT AddedAt
+    }
+    Orders {
+        INTEGER Id PK
+        TEXT OrderNumber UK
+        TEXT UserId FK
+        TEXT OrderDate
+        TEXT Status
+        TEXT PaymentMethod
+        REAL SubTotal
+        REAL ShippingCost
+        REAL Total
+        TEXT ShippingFullName
+        TEXT ShippingAddress
+        TEXT ShippingCity
+        TEXT ShippingPostalCode
+        TEXT ShippingCountry
+        TEXT ShippingPhone
+    }
+    OrderItems {
+        INTEGER Id PK
+        INTEGER OrderId FK
+        INTEGER ProductId FK
+        TEXT ProductName
+        REAL UnitPrice
+        INTEGER Quantity
+    }

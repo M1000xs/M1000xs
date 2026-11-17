@@ -1,0 +1,34 @@
+@model Order
+@{ ViewData["Title"] = "Commande confirmée"; }
+<div class="container">
+    <ol class="checkout-steps mb-4">
+        <li class="done">Panier</li><li class="done">Livraison &amp; paiement</li><li class="current">Confirmation</li>
+    </ol>
+    <div class="card confirmation-card mx-auto">
+        <div class="card-body text-center p-5">
+            <div class="check-circle mx-auto mb-3" aria-hidden="true">✓</div>
+            <h1 class="h3">Merci pour votre commande !</h1>
+            <p class="text-muted">Un récapitulatif est disponible dans votre espace client.</p>
+            <p class="mb-1">Numéro de commande</p>
+            <p class="order-number">@Model.OrderNumber</p>
+            <div class="row text-start mt-4 g-3">
+                <div class="col-md-6">
+                    <h2 class="h6 text-uppercase text-muted">Livraison</h2>
+                    <address class="mb-0">
+                        @Model.ShippingFullName<br />@Model.ShippingAddress<br />@Model.ShippingPostalCode @Model.ShippingCity, @Model.ShippingCountry<br />@Model.ShippingPhone
+                    </address>
+                </div>
+                <div class="col-md-6">
+                    <h2 class="h6 text-uppercase text-muted">Paiement</h2>
+                    <p class="mb-1">@Model.PaymentMethod.DisplayName()</p>
+                    <span class="badge @Model.Status.BadgeClass()">@Model.Status.DisplayName()</span>
+                    <p class="mt-2 mb-0">Total : <strong>@Model.Total.ToDt()</strong></p>
+                </div>
+            </div>
+            <div class="mt-4 d-flex gap-2 justify-content-center">
+                <a asp-action="Details" asp-route-id="@Model.OrderNumber" class="btn btn-outline-secondary">Voir le détail</a>
+                <a asp-controller="Products" asp-action="Index" class="btn btn-brand">Continuer mes achats</a>
+            </div>
+        </div>
+    </div>
+</div>

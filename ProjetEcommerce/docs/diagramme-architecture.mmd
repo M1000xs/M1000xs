@@ -1,0 +1,100 @@
+classDiagram
+    direction LR
+    class HomeController {
+        +Index()
+        +Error()
+    }
+    class ProductsController {
+        +Index(ProductFilter)
+        +Details(id)
+    }
+    class CartController {
+        +Index()
+        +Add(productId, quantity)
+        +Update(productId, quantity)
+        +Remove(productId)
+        +Clear()
+    }
+    class OrdersController {
+        <<Authorize>>
+        +Checkout()
+        +Checkout(CheckoutViewModel)
+        +Confirmation(numero)
+        +Details(numero)
+    }
+    class AccountController {
+        +Register()
+        +Login()
+        +Logout()
+        +Profile()
+        +ChangePassword()
+    }
+    class AdminDashboardController {
+        <<Admin>>
+        +Index()
+    }
+    class AdminProductsController {
+        <<Admin>>
+        +Index()
+        +Create()
+        +Edit(id)
+        +Delete(id)
+    }
+    class AdminOrdersController {
+        <<Admin>>
+        +Index(status)
+        +Details(id)
+        +UpdateStatus(id, status)
+    }
+    class ICartService {
+        <<interface>>
+        +GetCartAsync()
+        +AddAsync()
+        +UpdateAsync()
+        +RemoveAsync()
+        +ClearAsync()
+        +MergeAnonymousCartAsync()
+    }
+    class IOrderService {
+        <<interface>>
+        +PlaceOrderAsync()
+        +GetUserOrdersAsync()
+        +GetUserOrderAsync()
+    }
+    class CartService {
+    }
+    class OrderService {
+    }
+    class ApplicationDbContext {
+        <<DbContext>>
+        +Categories
+        +Products
+        +ProductImages
+        +CartItems
+        +Orders
+        +OrderItems
+    }
+    class UserManager {
+        <<Identity>>
+    }
+    class SignInManager {
+        <<Identity>>
+    }
+    ICartService <|.. CartService
+    IOrderService <|.. OrderService
+    HomeController --> ApplicationDbContext
+    ProductsController --> ApplicationDbContext
+    ProductsController --> ICartService
+    CartController --> ICartService
+    OrdersController --> ICartService
+    OrdersController --> IOrderService
+    OrdersController --> UserManager
+    AccountController --> UserManager
+    AccountController --> SignInManager
+    AccountController --> ICartService
+    AccountController --> IOrderService
+    AdminDashboardController --> ApplicationDbContext
+    AdminProductsController --> ApplicationDbContext
+    AdminOrdersController --> ApplicationDbContext
+    CartService --> ApplicationDbContext
+    OrderService --> ApplicationDbContext
